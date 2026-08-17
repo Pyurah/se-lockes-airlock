@@ -1,0 +1,25 @@
+Locke's Airlocks
+================
+Based on Blargmode's Aggressive Airlocks. Full attribution at
+https://github.com/Pyurah/se-lockes-airlock/blob/main/CREDITS.md
+
+SETUP
+-----
+Press Ok / Run once to initialize. Run "update" after any block changes.
+Check Custom Data for all settings and the setup log.
+
+TAGS (add to block Custom Name)
+--------------------------------
+  #AL       Outer door of a smart or group airlock
+  #Hangar   Outer door of a hangar
+  #Ignore   Exclude this block entirely
+  #Manual   Disable auto-close on this door
+
+COMMANDS (as Run argument)
+---------------------------
+  update    Re-scan all blocks
+  atmo      Toggle atmosphere mode
+  atmo on   Force atmosphere mode on
+  atmo off  Force atmosphere mode off
+
+See README at the GitHub link above for full setup instructions.

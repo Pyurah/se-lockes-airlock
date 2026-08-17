@@ -1,0 +1,19 @@
+## .NET build artifacts
+bin/
+obj/
+
+## MDK2 local config (machine-specific paths — do not commit)
+mdk.local.ini
+*.mdk.local.ini
+
+## Visual Studio
+.vs/
+*.user
+*.suo
+
+## Rider
+.idea/
+
+## OS
+.DS_Store
+Thumbs.db
