@@ -47,6 +47,8 @@ namespace IngameScript
         {
             C = components;
             C.Gas.DisableGenerators();
+            foreach (var d in C.OuterDoors) d.AutoClose = false;
+            foreach (var d in C.InnerDoors) d.AutoClose = false;
             RecalcOpenCounts();
         }
 

@@ -148,7 +148,7 @@ namespace IngameScript
             EnableDoors(C.InnerDoors, true);
             if (InnerOpenCount <= 0 && OuterOpenCount <= 0)
             {
-                Depressurize(true);
+                Depressurize(false);
                 SetState(AirlockState.Neutral);
             }
         }
