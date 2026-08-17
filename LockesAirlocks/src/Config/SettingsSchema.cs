@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Text.RegularExpressions;
+using System.Text;
 using VRageMath;
 
 namespace IngameScript
@@ -81,8 +80,8 @@ namespace IngameScript
 
         // --- value formatting -------------------------------------------------
         static string Bool(bool value) => value ? "yes" : "no";
-        static string Num(float value) => value.ToString(CultureInfo.InvariantCulture);
-        static string Num(double value) => value.ToString(CultureInfo.InvariantCulture);
+        static string Num(float value) => value.ToString();
+        static string Num(double value) => value.ToString();
         static string ColorText(Color c) => "R:" + c.R + ", G:" + c.G + ", B:" + c.B;
 
         // --- value parsing ----------------------------------------------------
@@ -99,13 +98,13 @@ namespace IngameScript
         static float ParseFloat(string value, float fallback)
         {
             float result;
-            return float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out result) ? result : fallback;
+            return float.TryParse(value.Trim(), out result) ? result : fallback;
         }
 
         static double ParseDouble(string value, double fallback)
         {
             double result;
-            return double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out result) ? result : fallback;
+            return double.TryParse(value.Trim(), out result) ? result : fallback;
         }
 
         /// <summary>Parses "R:255, G:0, B:128" style color text. Falls back to the current value on any error.</summary>
@@ -119,12 +118,20 @@ namespace IngameScript
             var channels = new int[3];
             for (var i = 0; i < 3; i++)
             {
-                var digits = Regex.Replace(split[i], "[^0-9]", "");
+                var digits = ExtractDigits(split[i]);
                 int parsed;
                 if (!int.TryParse(digits, out parsed)) return fallback;
                 channels[i] = parsed < 0 ? 0 : (parsed > 255 ? 255 : parsed);
             }
             return new Color(channels[0], channels[1], channels[2]);
+        }
+
+        static string ExtractDigits(string s)
+        {
+            var sb = new StringBuilder();
+            foreach (var c in s)
+                if (c >= '0' && c <= '9') sb.Append(c);
+            return sb.ToString();
         }
     }
 }
