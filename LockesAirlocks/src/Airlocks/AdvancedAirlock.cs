@@ -79,18 +79,21 @@ namespace IngameScript
             MaybeAtmoSkip = StartOxygen > 0.8;
             CurrentOxygen = PrimaryOxygenLevel();
 
+            bool timedOut = false;
             if (C.Context.Time > Timeout)
             {
-                if (VentProgressStalled()) { CurrentOxygen = 1; Timeout = TimeSpan.MaxValue; }
+                if (VentProgressStalled()) { timedOut = true; CurrentOxygen = 1; }
                 else { StartOxygen = CurrentOxygen; Timeout = C.Context.Time + C.VentTimeout; }
             }
 
             if (CurrentOxygen > 0.9 || C.Context.InAtmo)
             {
                 _needsPressurize = false;
+                ErrorStatus = timedOut ? "Pressurization stalled" : "";
+                ClearLockRequests(C.InnerDoors);
+                ClearLockRequests(C.OuterDoors);
                 EnableDoors(C.InnerDoors, true);
                 OpenAll(C.InnerDoors);
-                ErrorStatus = C.Context.Time > Timeout ? "Pressurization failed" : "";
                 Timeout = TimeSpan.MaxValue;
                 SetState(AirlockState.InnerOpen);
             }
@@ -100,9 +103,10 @@ namespace IngameScript
         {
             CurrentOxygen = PrimaryOxygenLevel();
 
+            bool timedOut = false;
             if (C.Context.Time > Timeout)
             {
-                if (VentProgressStalled()) { CurrentOxygen = 0; Timeout = TimeSpan.MaxValue; }
+                if (VentProgressStalled()) { timedOut = true; CurrentOxygen = 0; }
                 else { StartOxygen = CurrentOxygen; Timeout = C.Context.Time + C.VentTimeout; }
             }
 
@@ -113,23 +117,28 @@ namespace IngameScript
 
             if (ready)
             {
-                if (!C.Gas.AttemptAirScoop) EnableVents(false);
+                ErrorStatus = timedOut ? "Depressurization stalled" : "";
+                Timeout = TimeSpan.MaxValue;
 
                 if (_needsDepressurize)
                 {
                     _needsDepressurize = false;
+                    if (!C.Gas.AttemptAirScoop) EnableVents(false);
+                    ClearLockRequests(C.OuterDoors);
+                    ClearLockRequests(C.InnerDoors);
                     EnableDoors(C.OuterDoors, true);
                     OpenAll(C.OuterDoors);
                     SetState(AirlockState.OuterOpen);
                 }
                 else
                 {
+                    Depressurize(false);
+                    ClearLockRequests(C.OuterDoors);
+                    ClearLockRequests(C.InnerDoors);
                     EnableDoors(C.OuterDoors, true);
                     EnableDoors(C.InnerDoors, true);
                     SetState(AirlockState.Neutral);
                 }
-                ErrorStatus = C.Context.Time > Timeout ? "Depressurization failed" : "";
-                Timeout = TimeSpan.MaxValue;
             }
         }
 
@@ -160,6 +169,9 @@ namespace IngameScript
             }
             else if (State == AirlockState.OuterOpen && OuterOpenCount <= 0)
             {
+                Depressurize(false);
+                ClearLockRequests(C.InnerDoors);
+                ClearLockRequests(C.OuterDoors);
                 EnableDoors(C.InnerDoors, true);
                 SetState(AirlockState.Neutral);
             }

@@ -75,6 +75,11 @@ namespace IngameScript
             foreach (var d in doors) d.LockRequest = true;
         }
 
+        protected void ClearLockRequests(List<ExtendedDoor> doors)
+        {
+            foreach (var d in doors) d.LockRequest = false;
+        }
+
         protected void EnableDoors(List<ExtendedDoor> doors, bool enabled)
         {
             foreach (var d in doors) d.Door.Enabled = enabled;
