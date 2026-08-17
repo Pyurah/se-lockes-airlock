@@ -176,7 +176,24 @@ namespace IngameScript
             var sb = new StringBuilder();
             sb.Append(ScriptName);
             sb.Append(NextDots());
-            sb.Append("\nLoad avg: ");
+            sb.Append("\n");
+
+            var total = _controller.AdvancedCount + _controller.HangarCount
+                      + _controller.TinyCount + _controller.SimpleGroupCount;
+            if (total > 0 || _controller.RegularCount > 0)
+            {
+                if (_controller.AdvancedCount > 0) { sb.Append(_controller.AdvancedCount); sb.Append(" smart/group"); if (_controller.AdvancedCount > 1) sb.Append("s"); sb.Append("  "); }
+                if (_controller.HangarCount > 0)   { sb.Append(_controller.HangarCount);   sb.Append(" hangar");       if (_controller.HangarCount > 1)   sb.Append("s"); sb.Append("  "); }
+                if (_controller.TinyCount > 0)     { sb.Append(_controller.TinyCount);     sb.Append(" tiny");         if (_controller.TinyCount > 1)     sb.Append("s"); sb.Append("  "); }
+                if (_controller.SimpleGroupCount > 0) { sb.Append(_controller.SimpleGroupCount); sb.Append(" simple");  if (_controller.SimpleGroupCount > 1) sb.Append("s"); sb.Append("  "); }
+                if (_controller.RegularCount > 0)  { sb.Append(_controller.RegularCount);  sb.Append(" door");         if (_controller.RegularCount > 1)  sb.Append("s"); }
+            }
+            else
+            {
+                sb.Append("No airlocks found — run 'update'");
+            }
+
+            sb.Append("\nLoad: ");
             sb.Append(((int)((_profiler.AverageInstructions / Runtime.MaxInstructionCount) * 100)));
             sb.Append("% / ");
             sb.Append(_profiler.AverageRuntimeMs.ToString("n2"));
@@ -187,8 +204,6 @@ namespace IngameScript
             PurgeMessages();
             foreach (var m in _messages) { sb.Append("\n\n"); sb.Append(m.Message); }
 
-            sb.Append("\n\n");
-            sb.Append(_setupLog.Length > 0 ? "Setup complete. See Custom Data." : "Initializing...");
             Echo(sb.ToString());
         }
 
